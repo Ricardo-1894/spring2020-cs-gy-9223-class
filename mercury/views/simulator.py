@@ -10,6 +10,7 @@ from mercury.models import (
     WheelSpeedSensor,
     SuspensionSensor,
     FuelLevelSensor,
+    WindSpeedSensor,
 )
 from ..event_check import require_event_code
 from ..forms import (
@@ -18,6 +19,7 @@ from ..forms import (
     WheelSpeedForm,
     SuspensionForm,
     FuelLevelForm,
+    WindSpeedForm,
 )
 
 
@@ -92,6 +94,15 @@ class SimulatorView(TemplateView):
             )
             fl_data.save()
 
+        if request.POST.get("created_at_wi"):
+            post_created_at = request.POST.get("created_at_wi")
+            post_current_wind_speed = request.POST.get("current_wind_speed")
+
+            wi_data = WindSpeedSensor(
+                created_at=post_created_at, current_wind_speed=post_current_wind_speed
+            )
+            wi_data.save()
+
         return HttpResponse(status=201)
 
     @require_event_code
@@ -105,11 +116,13 @@ class SimulatorView(TemplateView):
         form_ws = WheelSpeedForm(initial=initial_data)
         form_ss = SuspensionForm(initial=initial_data)
         form_fl = FuelLevelForm(initial=initial_data)
+        form_wi = WindSpeedForm(initial=initial_data)
         context = {
             "form_temp": form_temp,
             "form_accel": form_accel,
             "form_ws": form_ws,
             "form_ss": form_ss,
             "form_fl": form_fl,
+            "form_wi": form_wi,
         }
         return render(request, self.template_name, context)

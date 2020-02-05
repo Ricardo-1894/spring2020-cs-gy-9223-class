@@ -96,4 +96,20 @@ class Migration(migrations.Migration):
                 ("wheel_speed_bl", models.FloatField(default=0)),
             ],
         ),
+        migrations.CreateModel(
+            name="WindSpeedSensor",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField()),
+                ("current_wind_speed", models.FloatField(default=0)),
+            ],
+        ),
     ]

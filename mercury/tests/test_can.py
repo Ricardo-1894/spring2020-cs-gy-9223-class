@@ -15,6 +15,7 @@ from mercury.models import (
     WheelSpeedSensor,
     SuspensionSensor,
     FuelLevelSensor,
+    WindSpeedSensor,
 )
 
 EXAMPLE_CAN_MSG_EXTENDED = (
@@ -27,6 +28,7 @@ ACCEL_DATA = 0b10000000001000001100000000000000001000000000000001000000000000000
 SPEED_DATA = 0b100000000011000100000000000000000010000000000000010000000000000001100000000000001000000000000000001110000000000
 SUSP_DATA = 0b100000000100000100000000000000000010000000000000010000000000000001100000000000001000000000000000001110000000000
 FUEL_DATA = 0b1000000001010000001000000010000000000000001110000000000
+# WIND_DATA = 0b1000000001010000001000000010000000000000001110000000000
 
 
 class TestCANDRecessiveBits(TestCase):
@@ -59,6 +61,9 @@ class TestCANSensorIdentification(TestCase):
         self.fuel_data = CANDecoder(
             0b1000000001010000001000000010000000000000001110000000000
         ).decode_can_message()
+        # self.wind_data = CANDecoder(
+        #     0b1000000001010000001000000010000000000000001110000000001
+        # ).decode_can_message()
 
     def test_can_sensor_identification(self):
         temp_model = CANMapper(self.temp_data).get_sensor_from_id()
@@ -75,6 +80,9 @@ class TestCANSensorIdentification(TestCase):
 
         fuel_model = CANMapper(self.fuel_data).get_sensor_from_id()
         self.assertEqual(FuelLevelSensor, fuel_model)
+
+        # wind_model = CANMapper(self.wind_data).get_sensor_from_id()
+        # self.assertEqual(WindSpeedSensor, wind_model)
 
         none_model_int = CANMapper({"can_id": 9999}).get_sensor_from_id()
         self.assertEqual(None, none_model_int)
@@ -221,6 +229,12 @@ class TestCANViews(TestCase):
             reverse("mercury:can-api"), data={"can_msg": FUEL_DATA}
         )
         self.assertEqual(201, response.status_code)
+
+    # def test_wind_sensor(self):
+    #     response = self.client.post(
+    #         reverse("mercury:can-api"), data={"can_msg":WIND_DATA}
+    #     )
+    #     self.assertEqual(201, response.status_code)
 
     def test_none_sensor_type(self):
         response = self.client.post(
